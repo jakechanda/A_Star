@@ -150,17 +150,18 @@ def play_game() -> tuple:
 # Rotate the face based on the user input
 # Print the pyraminx
 # Return: None
-print("Welcome to the Pyraminx!")
-print("Please enter help for instructions on how to play the game.")
-print("Enter q to exit the game!")
-craft_pyramid()
-while True:
-
-    arg, direction = play_game()
-
-    if arg == 'Face' or arg == 'help':
-        craft_pyramid()
-        continue
-
-    Face.rotate_face(arg, direction, Face.front_face)
+def main():
+    print("Welcome to the Pyraminx!")
+    print("Please enter help for instructions on how to play the game.")
+    print("Enter q to exit the game!")
     craft_pyramid()
+    while True:
+
+        arg, direction = play_game()
+
+        if arg == 'Face' or arg == 'help':
+            craft_pyramid()
+            continue
+
+        Face.rotate_face(arg, direction, Face.front_face)
+        craft_pyramid()

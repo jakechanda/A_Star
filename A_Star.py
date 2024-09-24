@@ -3,17 +3,22 @@ import heapq
 import Pyraminx
 
 class Node:
-    def __init__(self):
-        # Parent Node
-        self.parent = 1
-        self.configuration = 1
+    def __init__(self, parent=None, configuration=None):
+        self.parent = parent
+        self.configuration = configuration if configuration else self.get_current_configuration()
 
-        # Generate the child configuration
-        self.child = 0
+        # Initialize child as None or an empty list if there can be multiple children
+        self.child = None
 
         # g, h, f values
-        self.g = 1
-        self.h = 1
-        self.f = 1
+        self.g = 0
+        self.h = 0
+        self.f = 0
 
-        
+    def get_current_configuration(self):
+        self.configuration = Pyraminx.faces
+
+    def calculate_costs(self, g, h):
+        self.g = g
+        self.h = h
+        self.f = g + h
