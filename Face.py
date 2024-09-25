@@ -84,7 +84,7 @@ def get_direction() -> str:
 
 # Check if the input is valid
 def is_valid_input(move) -> bool:
-    return move in ["U1","U2","U3","U4","L1","L2","L3","L4","R1","R2","R3","R4"]
+    return move in ["U1","U2","U3","U4","L1","L2","L3","L4","R1","R2","R3","R4","B1","B2","B3","B4"]
 
 # Name: rotate_upper_cw
 # Rotate the upper corner of the face clockwise
@@ -132,7 +132,7 @@ def rotate_upper_cw(face, user_arg) -> None:
 
     if(user_arg == "U4"):
         for i in range(16):
-            face.back_neighbor.array[i] = temp_back[clockwise_rotation[i]]
+            face.back_neighbor.array[i] = temp_back[counterclockwise_rotation[i]]
 
 # Name: rotate_upper_ccw
 # Rotate the upper corner of the face counter-clockwise
@@ -180,7 +180,7 @@ def rotate_upper_ccw(face, user_arg) -> None:
 
     if(user_arg == "U4"):
         for i in range(16):
-            face.back_neighbor.array[i] = temp_back[counterclockwise_rotation[i]]
+            face.back_neighbor.array[i] = temp_back[clockwise_rotation[i]]
 
 # Name: rotate_left_cw
 # Rotate the left corner of the face clockwise
@@ -437,44 +437,44 @@ def rotate_right_ccw(face, user_arg) -> None:
 
 # Not needed for the pyraminx
 
-# def rotate_back_cw(face, user_arg) -> None:
-#     temp_front = face.array.copy()
-#     temp_back = face.back_neighbor.array.copy()
-#     temp_counterclockwise = face.back_ccw_neighbor.array.copy()
-#     temp_clockwise = face.back_cw_neighbor.array.copy()
+def rotate_back_cw(face, user_arg) -> None:
+     temp_front = face.array.copy()
+     temp_back = face.back_neighbor.array.copy()
+     temp_counterclockwise = face.back_ccw_neighbor.array.copy()
+     temp_clockwise = face.back_cw_neighbor.array.copy()
 
-#     if user_arg == "B1":
-#         backaffected_indexes = [0]
-#         cwaffected_indexes = [9]
-#         ccwaffected_indexes = [15]
-#     elif user_arg == "B2":
-#         backaffected_indexes = [1,2,3]
-#         cwaffected_indexes = [11,10,4]
-#         ccwaffected_indexes = [14,13,8]
-#     elif user_arg == "B3":
-#         backaffected_indexes = [4,5,6,7,8]
-#         cwaffected_indexes = [13,12,6,5,1]
-#         ccwaffected_indexes = [12,11,7,6,3]
-#     elif user_arg == "B4":
-#         backaffected_indexes = [9,10,11,12,13,14,15]
-#         cwaffected_indexes = [15,14,8,7,3,2,0]
-#         ccwaffected_indexes = [10,9,5,4,2,1,0]
-#     else:
-#         print("Invalid input that made it past the check function")
-#         return
+     if user_arg == "B1":
+         backaffected_indexes = [0]
+         cwaffected_indexes = [9]
+         ccwaffected_indexes = [15]
+     elif user_arg == "B2":
+         backaffected_indexes = [1,2,3]
+         cwaffected_indexes = [11,10,4]
+         ccwaffected_indexes = [14,13,8]
+     elif user_arg == "B3":
+         backaffected_indexes = [4,5,6,7,8]
+         cwaffected_indexes = [13,12,6,5,1]
+         ccwaffected_indexes = [12,11,7,6,3]
+     elif user_arg == "B4":
+         backaffected_indexes = [9,10,11,12,13,14,15]
+         cwaffected_indexes = [15,14,8,7,3,2,0]
+         ccwaffected_indexes = [10,9,5,4,2,1,0]
+     else:
+         print("Invalid input that made it past the check function")
+         return
     
-#     for i in backaffected_indexes:
-#         face.back_neighbor.array[i] = temp_counterclockwise[clockwise_rotation[i]]
+     for i in backaffected_indexes:
+         face.back_neighbor.array[i] = temp_counterclockwise[counterclockwise_rotation[i]]
 
-#     for j in cwaffected_indexes:
-#         face.back_cw_neighbor.array[j] = temp_back[clockwise_rotation[j]]
+     for j in cwaffected_indexes:
+         face.back_cw_neighbor.array[j] = temp_back[counterclockwise_rotation[j]]
 
-#     for k in ccwaffected_indexes:
-#         face.back_ccw_neighbor.array[k] = temp_clockwise[clockwise_rotation[k]]
+     for k in ccwaffected_indexes:
+         face.back_ccw_neighbor.array[k] = temp_clockwise[counterclockwise_rotation[k]]
 
-#     if(user_arg == "B4"):
-#         for i in range(16):
-#             face.array[i] = temp_front[clockwise_rotation[i]]
+     if(user_arg == "B4"):
+         for i in range(16):
+             face.array[i] = temp_front[clockwise_rotation[i]]
 
 # Name: rotate_back_ccw
 # Rotate the back corner of the face counter-clockwise
@@ -495,44 +495,44 @@ def rotate_right_ccw(face, user_arg) -> None:
 
 # Not needed for the pyraminx
 
-# def rotate_back_ccw(face, user_arg) -> None:
-#     temp_front = face.array.copy()
-#     temp_back = face.back_neighbor.array.copy()
-#     temp_counterclockwise = face.back_ccw_neighbor.array.copy()
-#     temp_clockwise = face.back_cw_neighbor.array.copy()
+def rotate_back_ccw(face, user_arg) -> None:
+     temp_front = face.array.copy()
+     temp_back = face.back_neighbor.array.copy()
+     temp_counterclockwise = face.back_ccw_neighbor.array.copy()
+     temp_clockwise = face.back_cw_neighbor.array.copy()
 
-#     if user_arg == "B1":
-#         backaffected_indexes = [0]
-#         cwaffected_indexes = [9]
-#         ccwaffected_indexes = [15]
-#     elif user_arg == "B2":
-#         backaffected_indexes = [1,2,3]
-#         cwaffected_indexes = [11,10,4]
-#         ccwaffected_indexes = [14,13,8]
-#     elif user_arg == "B3":
-#         backaffected_indexes = [4,5,6,7,8]
-#         cwaffected_indexes = [13,12,6,5,1]
-#         ccwaffected_indexes = [12,11,7,6,3]
-#     elif user_arg == "B4":
-#         backaffected_indexes = [9,10,11,12,13,14,15]
-#         cwaffected_indexes = [15,14,8,7,3,2,0]
-#         ccwaffected_indexes = [10,9,5,4,2,1,0]
-#     else:
-#         print("Invalid input that made it past the check function")
-#         return
+     if user_arg == "B1":
+         backaffected_indexes = [0]
+         cwaffected_indexes = [9]
+         ccwaffected_indexes = [15]
+     elif user_arg == "B2":
+         backaffected_indexes = [1,2,3]
+         cwaffected_indexes = [11,10,4]
+         ccwaffected_indexes = [14,13,8]
+     elif user_arg == "B3":
+         backaffected_indexes = [4,5,6,7,8]
+         cwaffected_indexes = [13,12,6,5,1]
+         ccwaffected_indexes = [12,11,7,6,3]
+     elif user_arg == "B4":
+         backaffected_indexes = [9,10,11,12,13,14,15]
+         cwaffected_indexes = [15,14,8,7,3,2,0]
+         ccwaffected_indexes = [10,9,5,4,2,1,0]
+     else:
+         print("Invalid input that made it past the check function")
+         return
     
-#     for i in backaffected_indexes:
-#         face.back_neighbor.array[i] = temp_clockwise[clockwise_rotation[i]]
+     for i in backaffected_indexes:
+         face.back_neighbor.array[i] = temp_clockwise[clockwise_rotation[i]]
 
-#     for j in cwaffected_indexes:
-#         face.back_cw_neighbor.array[j] = temp_back[clockwise_rotation[j]]
+     for j in cwaffected_indexes:
+         face.back_cw_neighbor.array[j] = temp_counterclockwise[clockwise_rotation[j]]
 
-#     for k in ccwaffected_indexes:
-#         face.back_ccw_neighbor.array[k] = temp_counterclockwise[clockwise_rotation[k]]
+     for k in ccwaffected_indexes:
+         face.back_ccw_neighbor.array[k] = temp_back[clockwise_rotation[k]]
 
-#     if(user_arg == "B4"):
-#         for i in range(16):
-#             face.array[i] = temp_front[clockwise_rotation[i]]
+     if(user_arg == "B4"):
+         for i in range(16):
+             face.array[i] = temp_front[counterclockwise_rotation[i]]
 
 #Calls random to pick any move from the moves array
 def get_random_move() -> str:
@@ -588,10 +588,10 @@ def rotate_face(arg, direction, face) -> None:
         rotate_right_cw(face, arg)
     elif arg[0] == "R" and direction == "2":
         rotate_right_ccw(face, arg)
-    # elif arg[0] == "B" and direction == "1":
-    #     rotate_back_cw(face, arg)
-    # elif arg[0] == "B" and direction == "2":
-    #     rotate_back_ccw(face, arg)
+    elif arg[0] == "B" and direction == "1":
+         rotate_back_cw(face, arg)
+    elif arg[0] == "B" and direction == "2":
+         rotate_back_ccw(face, arg)
     else:
         pass
 
