@@ -548,8 +548,8 @@ def get_random_move() -> str:
 def get_random_direction() -> str:
     return random.choice(["1", "2"])
 
-def get_random_turn() -> str:
-    for _ in range(4): #Creates a chosen number of random moves
+def get_random_turn(number_of_turns) -> str:
+    for _ in range(number_of_turns): #Creates a chosen number of random moves
         arg = get_random_move()
         direction = get_random_direction()
         print(f"Move: {arg}, Direction: {direction}") #Prints the randomly selected move to the console

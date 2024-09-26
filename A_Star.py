@@ -17,6 +17,10 @@ class Node:
         self.h = 0
         self.f = 0
 
+    # Name: __lt__(self, other)
+    # Description: This function will compare the f values of two nodes
+    # Input: other - the other node to compare
+    # Used in: heapq.heappush(open_list, (child.f, child))
     def __lt__(self, other):
         return self.f < other.f
 
@@ -40,6 +44,13 @@ class Node:
     def calculate_heuristic(self):
         self.h = Face.heuristic_function(self.configuration[0], self.configuration[1], self.configuration[2], self.configuration[3])
 
+    # Name: generate_children(self)
+    # Description: This function will generate the children of the current node
+    # Input: None
+    # Flow:
+    # For each child generated, calculate the heuristic value
+    # Make sure the faces are reset after each child is generated
+    # Return: children - the list of children of the current node
     def generate_children(self):
         # Generate children
         # For each child, calculate g, h, f values
@@ -56,8 +67,6 @@ class Node:
             child.apply_move(move, clockwise, Face.front_face)
             child.set_current_configuration()
             child.calculate_heuristic()
-            print(move + ' ' + 'clockwise')
-            print(child.h)
             children.append(child)
         
         self.reset_faces()
@@ -68,39 +77,56 @@ class Node:
             child.apply_move(move, counterclockwise, Face.front_face)
             child.set_current_configuration()
             child.calculate_heuristic()
-            print(move + ' ' + 'counterclockwise')
-            print(child.h)
             children.append(child)
         
         self.reset_faces()
 
         return children
 
+    # Name: possible_moves(self) -> list
+    # Description: This function will return the possible moves for the current configuration
+    # Input: None
+    # Output: possible_moves - the possible moves for the current configuration
     def possible_moves(self) -> list:
         # Get the possible moves for the current configuration
         possible_moves = Face.moves
         return possible_moves
 
+    # Name: apply_move(self, arg, direction, face)
+    # Description: This function will apply a move to the current configuration
+    # Input: arg - the move to apply
+    #        direction - the direction of the move
+    #        face - the face to apply the move to
+    # The move is applied to the current configuration
     def apply_move(self, arg, direction, face):
         # Apply the move to the current configuration
         Face.rotate_face(arg, direction, face)
         self.set_faces()
-        Pyraminx.faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
 
+    # Name: reset_faces(self)
+    # Description: This function will reset the faces of the Pyraminx to the current configuration
+    # Input: None
+    # The faces of the Pyraminx are reset to the current configuration so that the moves can be applied correctly
     def reset_faces(self):
         Face.left_face.array = self.left.copy()
         Face.front_face.array = self.front.copy()
         Face.right_face.array = self.right.copy()
         Face.bottom_face.array = self.bottom.copy()
 
+    # Name: set_faces(self)
+    # Description: This function will set the faces of the Pyraminx to the current configuration
+    # Input: None
+    # There are so many references to objects in the Pyrminx and Faces program that it is just easier
+    # to make a new function that for sure deep copies the arrays
     def set_faces(self):
         self.left, self.front, self.right, self.bottom = self.deepcopy_arrays()
 
+    # Name: __eq__(self, other)
+    # Description: This function will compare the current configuration of the Pyraminx with another configuration
+    # Input: other - the other configuration to compare
+    # This function will return True if the configurations are the same
     def __eq__(self, other):
         return self.left == other.left and self.front == other.front and self.right == other.right and self.bottom == other.bottom
-
-    def __hash__(self):
-        return hash((tuple(map(tuple, self.left)), tuple(map(tuple, self.front)), tuple(map(tuple, self.right)), tuple(map(tuple, self.bottom))))
 
 # list = Node()
 # list.set_current_configuration()
@@ -138,6 +164,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
         children = current_node.generate_children()
 
         for child in children:
+            # Check if child is in closed list
             if any(child == closed_node for closed_node in closed_list):
                 continue
 
@@ -156,30 +183,44 @@ def A_Star(start_pyraminx, goal_pyraminx):
 
 def main():
 
+
+    print("Welcome to the A* Pyraminx Solver!")
+    print("Please input k, the number of moves you would like to randomize the Pyraminx by")
+    k = int(input())
+    print("Randomizing the Pyraminx by " + str(k) + " moves...")
+
+    # Initialize the goal Pyraminx when the pyraminx is solved
     goal_pyraminx = Node()
     goal_pyraminx.set_current_configuration()
     goal_pyraminx.calculate_heuristic()
 
-    Face.get_random_turn()
+    # Randomize the Pyraminx
+    Face.get_random_turn(k)
 
     start_pyraminx = Node()
     start_pyraminx.set_current_configuration()
     start_pyraminx.calculate_heuristic()
 
-
-
+    # Call A_Star to solve the pyraminx
     path = A_Star(start_pyraminx, goal_pyraminx)
+
     if path is None:
         print("No path found")
     else:
         print("Path found:")
+
+        # Print the path
+        # For each configuration in the path, format the GUI and output the configuration
         for configuration in path:
-            print(configuration)
+
+            # Format GUI
             left = [cubie.color for cubie in configuration.left]
             front = [cubie.color for cubie in configuration.front]
             right = [cubie.color for cubie in configuration.right]
             bottom = [cubie.color for cubie in configuration.bottom]
             Pyraminx.faces = [left, front, right, bottom]
+
+            # Output configuration
             Pyraminx.craft_pyramid()
     
 if __name__ == '__main__':
