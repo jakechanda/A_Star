@@ -2,12 +2,13 @@ import math
 import heapq
 import Pyraminx
 import Face
+import copy
 
 class Node:
     def __init__(self, parent=None, configuration=None):
         self.parent = parent
         self.configuration = configuration if configuration is not None else Pyraminx.faces_reference
-
+        self.left, self.front, self.right, self.bottom = self.deepcopy_arrays()
         # Initialize child as None or an empty list if there can be multiple children
         self.child = None
 
@@ -23,6 +24,10 @@ class Node:
     def set_current_configuration(self):
         self.configuration = Pyraminx.faces_reference
 
+    # Name: deepcopy_arrays(self)
+    # Description: This function will deepcopy the arrays of the Pyraminx
+    def deepcopy_arrays(self):
+        return [Face.left_face.array.copy(), Face.front_face.array.copy(), Face.right_face.array.copy(), Face.bottom_face.array.copy()]
 
     def calculate_costs(self, g, h):
         self.g = g
@@ -43,24 +48,30 @@ class Node:
         counterclockwise = '2'
 
         for move in possible_moves:
-            Pyraminx.faces_reference = self.configuration
+            self.reset_faces()
             child = Node(self, self.configuration)
             child.apply_move(move, clockwise, Face.front_face)
+            Pyraminx.craft_pyramid()
             child.set_current_configuration()
             child.calculate_heuristic()
+            print(move + ' ' + 'clockwise')
+            print(child.h)
             children.append(child)
-
-        Pyraminx.faces_reference = self.configuration
+        
+        self.reset_faces()
         
         for move in possible_moves:
-            Pyraminx.faces_reference = self.configuration
+            self.reset_faces()
             child = Node(self, self.configuration)
             child.apply_move(move, counterclockwise, Face.front_face)
+            Pyraminx.craft_pyramid()
             child.set_current_configuration()
             child.calculate_heuristic()
+            print(move + ' ' + 'counterclockwise')
+            print(child.h)
             children.append(child)
         
-        Pyraminx.faces_reference = self.configuration
+        self.reset_faces()
 
         return children
 
@@ -72,7 +83,13 @@ class Node:
     def apply_move(self, arg, direction, face):
         # Apply the move to the current configuration
         Face.rotate_face(arg, direction, face)
-        Pyraminx.faces_reference = [Face.left_face, Face.front_face, Face.right_face, Face.bottom_face]
+        Pyraminx.faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
+
+    def reset_faces(self):
+        Face.left_face.array = self.left.copy()
+        Face.front_face.array = self.front.copy()
+        Face.right_face.array = self.right.copy()
+        Face.bottom_face.array = self.bottom.copy()
 
 # list = Node()
 # list.set_current_configuration()
@@ -127,6 +144,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
 
 
 list = Node()
+
 children = list.generate_children()
 
 for child in children:
