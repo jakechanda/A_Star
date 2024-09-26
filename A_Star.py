@@ -17,6 +17,9 @@ class Node:
         self.h = 0
         self.f = 0
 
+    def __lt__(self, other):
+        return self.f < other.f
+
     # Name: get_current_configuration(self)
     # Description: This function will get the current configuration of the Pyraminx
     # Input: None
@@ -51,7 +54,6 @@ class Node:
             self.reset_faces()
             child = Node(self, self.configuration)
             child.apply_move(move, clockwise, Face.front_face)
-            Pyraminx.craft_pyramid()
             child.set_current_configuration()
             child.calculate_heuristic()
             print(move + ' ' + 'clockwise')
@@ -64,7 +66,6 @@ class Node:
             self.reset_faces()
             child = Node(self, self.configuration)
             child.apply_move(move, counterclockwise, Face.front_face)
-            Pyraminx.craft_pyramid()
             child.set_current_configuration()
             child.calculate_heuristic()
             print(move + ' ' + 'counterclockwise')
@@ -83,6 +84,7 @@ class Node:
     def apply_move(self, arg, direction, face):
         # Apply the move to the current configuration
         Face.rotate_face(arg, direction, face)
+        self.set_faces()
         Pyraminx.faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
 
     def reset_faces(self):
@@ -90,6 +92,15 @@ class Node:
         Face.front_face.array = self.front.copy()
         Face.right_face.array = self.right.copy()
         Face.bottom_face.array = self.bottom.copy()
+
+    def set_faces(self):
+        self.left, self.front, self.right, self.bottom = self.deepcopy_arrays()
+
+    def __eq__(self, other):
+        return self.left == other.left and self.front == other.front and self.right == other.right and self.bottom == other.bottom
+
+    def __hash__(self):
+        return hash((tuple(map(tuple, self.left)), tuple(map(tuple, self.front)), tuple(map(tuple, self.right)), tuple(map(tuple, self.bottom))))
 
 # list = Node()
 # list.set_current_configuration()
@@ -103,7 +114,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
     # Initialize the open list
     open_list = []
     # Initialize the closed list
-    closed_list = set()
+    closed_list = []
 
     # Add the start node to the open list
     heapq.heappush(open_list, (start_pyraminx.f, start_pyraminx))
@@ -113,25 +124,25 @@ def A_Star(start_pyraminx, goal_pyraminx):
         current_node = heapq.heappop(open_list)[1]
 
         # If the goal is reached, reconstruct the path and return it
-        if current_node.configuration == goal_pyraminx.configuration:
+        if current_node == goal_pyraminx:
             path = []
             while current_node:
-                path.append(current_node.configuration)
+                path.append(current_node)
                 current_node = current_node.parent
             return path[::-1]  # Return reversed path
 
         # Add the current node to the closed list
-        closed_list.add(tuple(map(tuple, current_node.configuration)))
+        closed_list.append(current_node)
 
         # Generate children
         children = current_node.generate_children()
 
         for child in children:
-            if tuple(map(tuple, child.configuration)) in closed_list:
+            if any(child == closed_node for closed_node in closed_list):
                 continue
 
             # Calculate g, h, f values
-            child.calculate_costs(current_node.g + 1, child.calculate_heuristic())
+            child.calculate_costs(current_node.g + 1, child.h)
 
             # Check if child is already in open list with a higher g value
             for open_node in open_list:
@@ -143,9 +154,33 @@ def A_Star(start_pyraminx, goal_pyraminx):
     return None  # If no path is found
 
 
-list = Node()
+def main():
 
-children = list.generate_children()
+    goal_pyraminx = Node()
+    goal_pyraminx.set_current_configuration()
+    goal_pyraminx.calculate_heuristic()
 
-for child in children:
-    print(child.h)
+    Face.get_random_turn()
+
+    start_pyraminx = Node()
+    start_pyraminx.set_current_configuration()
+    start_pyraminx.calculate_heuristic()
+
+
+
+    path = A_Star(start_pyraminx, goal_pyraminx)
+    if path is None:
+        print("No path found")
+    else:
+        print("Path found:")
+        for configuration in path:
+            print(configuration)
+            left = [cubie.color for cubie in configuration.left]
+            front = [cubie.color for cubie in configuration.front]
+            right = [cubie.color for cubie in configuration.right]
+            bottom = [cubie.color for cubie in configuration.bottom]
+            Pyraminx.faces = [left, front, right, bottom]
+            Pyraminx.craft_pyramid()
+    
+if __name__ == '__main__':
+    main()
