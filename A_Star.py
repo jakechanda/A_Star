@@ -209,6 +209,8 @@ def main():
 
     for trial in range(5):
 
+        print("This is trial number " + str(trial + 1))
+
         Face.left_face.array = goal_pyraminx.left.copy()
         Face.front_face.array = goal_pyraminx.front.copy()
         Face.right_face.array = goal_pyraminx.right.copy()
@@ -244,9 +246,11 @@ def main():
                 # Output configuration
                 Pyraminx.craft_pyramid()
                 # Calculate the average number of nodes expanded for this value of k
+        print("The nodes printed for trial " + str(trial + 1) + " is " + str(nodes_expanded))
 
     if results:    
         plot_results(results, k)
+
 
 
 
@@ -265,6 +269,8 @@ def plot_results(results, k):
     # Determine the step size for y-axis ticks
     step_size = max(1, (max(results) - min(results)) // 10)
     plt.yticks(range(min(results), max(results) + 1, step_size))
+    plt.savefig(f'plot_k_{k}.png')
+    print(f"Plot saved as plot_k_{k}.png")
     plt.show()
 
 
