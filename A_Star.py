@@ -23,6 +23,7 @@ class Node:
     def get_current_configuration(self):
         self.configuration = Pyraminx.faces_reference
 
+
     def calculate_costs(self, g, h):
         self.g = g
         self.h = h
@@ -36,3 +37,5 @@ list.get_current_configuration()
 list.calculate_heuristic()
 print(list.configuration)
 print(list.h)
+
+Pyraminx.test()

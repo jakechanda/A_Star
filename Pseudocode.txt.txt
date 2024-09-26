@@ -1,0 +1,63 @@
+I got confused trying to relate pseudocode from in class/textbook and online resources, so I used ChatGPT 4o to generate some pseudocode using the following prompt: I need to see the pseudocode for A* algorithm as it relates to the master pyraminx
+This is the inspiration I am taking to implement the project.
+
+
+function AStar(start_pyraminx, goal_pyraminx):
+    open_list = priority queue containing (0, start_pyraminx)  # f_cost = 0 for start
+    closed_list = empty set
+    came_from = empty map  # Tracks the path to reconstruct the solution
+    
+    g_cost[start_pyraminx] = 0  # Cost from start to start is 0
+    f_cost[start_pyraminx] = heuristic(start_pyraminx, goal_pyraminx)  # Heuristic estimate
+    
+    while open_list is not empty:
+        current_pyraminx = node in open_list with the lowest f_cost
+        
+        if current_pyraminx is goal_pyraminx:
+            return reconstruct_path(came_from, current_pyraminx)
+        
+        remove current_pyraminx from open_list
+        add current_pyraminx to closed_list
+        
+        for each valid_move in get_possible_moves(current_pyraminx):
+            neighbor = apply_move(current_pyraminx, valid_move)  # New state after move
+            
+            if neighbor is in closed_list:
+                continue  # Ignore already explored states
+            
+            tentative_g_cost = g_cost[current_pyraminx] + 1  # Each move costs 1
+            
+            if neighbor not in open_list or tentative_g_cost < g_cost[neighbor]:
+                # This path to neighbor is the best so far
+                came_from[neighbor] = (current_pyraminx, valid_move)
+                g_cost[neighbor] = tentative_g_cost
+                f_cost[neighbor] = tentative_g_cost + heuristic(neighbor, goal_pyraminx)
+                
+                if neighbor not in open_list:
+                    add neighbor to open_list with f_cost[neighbor]
+    
+    return failure  # If no solution is found
+
+
+function reconstruct_path(came_from, current_pyraminx):
+    path = []
+    while current_pyraminx is in came_from:
+        previous_pyraminx, move = came_from[current_pyraminx]
+        path.append(move)
+        current_pyraminx = previous_pyraminx
+    reverse(path)  # Reverse to get the correct order from start to goal
+    return path
+
+
+function heuristic(current_pyraminx, goal_pyraminx):
+    # Heuristic calculates the number of misplaced cubies divided by 21
+    pass
+
+
+function possible_moves(pyraminx):
+    # list all the possible moves
+
+
+function apply_move(pyraminx, move):
+    # Returns a new Pyraminx state after applying the move
+    

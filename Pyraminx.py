@@ -169,3 +169,10 @@ def main():
         faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
         craft_pyramid()
         print("Heuristic value: " + str(Face.heuristic_function(Face.left_face, Face.front_face, Face.right_face, Face.bottom_face)))
+
+def test():
+    Face.rotate_face('U1', '1', Face.front_face)
+    global faces
+    faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
+    craft_pyramid()
+    print("Heuristic value: " + str(Face.heuristic_function(Face.left_face, Face.front_face, Face.right_face, Face.bottom_face)))
