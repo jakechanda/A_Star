@@ -36,20 +36,9 @@ class Face:
     # None
     def check_cubies(self) -> int:
         counter = 0
-        if cubie.color[0] != self.color[0]:
-            counter += 1
-        if cubie.color[9] != self.color[9]:
-            counter += 1
-        if cubie.color[15] != self.color[15]:
-            counter += 1
-        if (cubie.color[1] != self.color[1]) or (cubie.color[4] != self.color[4]) or (cubie.color[5] != self.color[5]):
-            counter += 1
-        if (cubie.color[3] != self.color[3]) or (cubie.color[7] != self.color[7]) or (cubie.color[8] != self.color[8]):
-            couner += 1
-        if (cubie.color[11] != self.color[11]) or (cubie.color[12] != self.color[12]) or (cubie.color[13] != self.color[13]):
-            counter += 1
-        if (cubie.color[2] != self.color[2]) or (cubie.color[6] != self.color[6]) or (cubie.color[10] != self.color[10]) or (cubie.color[14] != self.color[14]):
-            counter += 1
+        for cubie in self.array:
+            if cubie.color != self.color:
+                counter += 1
         return counter
 
     # Name: output_color(self) -> list:
@@ -672,7 +661,7 @@ def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
     front_face_count = front_face.check_cubies()
     right_face_count = right_face.check_cubies()
     bottom_face_count = bottom_face.check_cubies()
-    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 12)
+    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
 
 #Create list of possible moves
 moves = ["U1", "U2", "U3", "U4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4", "B1", "B2", "B3", "B4"]
