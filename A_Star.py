@@ -3,6 +3,7 @@ import heapq
 import Pyraminx
 import Face
 import copy
+import matplotlib.pyplot as plt
 
 class Node:
     def __init__(self, parent=None, configuration=None):
@@ -145,9 +146,15 @@ def A_Star(start_pyraminx, goal_pyraminx):
     # Add the start node to the open list
     heapq.heappush(open_list, (start_pyraminx.f, start_pyraminx))
 
+
+    # Counter to track how many nodes were expanded
+    nodes_expanded = 0
+
+
     while open_list:
         # Get the node with the lowest f value
         current_node = heapq.heappop(open_list)[1]
+        nodes_expanded += 1
 
         # If the goal is reached, reconstruct the path and return it
         if current_node == goal_pyraminx:
@@ -155,7 +162,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
             while current_node:
                 path.append(current_node)
                 current_node = current_node.parent
-            return path[::-1]  # Return reversed path
+            return path[::-1], nodes_expanded  # Return reversed path
 
         # Add the current node to the closed list
         closed_list.append(current_node)
@@ -187,41 +194,79 @@ def main():
     print("Welcome to the A* Pyraminx Solver!")
     print("Please input k, the number of moves you would like to randomize the Pyraminx by")
     k = int(input())
+    results = []
     print("Randomizing the Pyraminx by " + str(k) + " moves...")
+
+    print("There will be five trials done with the Pyraminx being randomized by " + str(k) + " moves")
+
+
+    node_counts = []
 
     # Initialize the goal Pyraminx when the pyraminx is solved
     goal_pyraminx = Node()
     goal_pyraminx.set_current_configuration()
     goal_pyraminx.calculate_heuristic()
 
-    # Randomize the Pyraminx
-    Face.get_random_turn(k)
+    for trial in range(5):
 
-    start_pyraminx = Node()
-    start_pyraminx.set_current_configuration()
-    start_pyraminx.calculate_heuristic()
+        Face.left_face.array = goal_pyraminx.left.copy()
+        Face.front_face.array = goal_pyraminx.front.copy()
+        Face.right_face.array = goal_pyraminx.right.copy()
+        Face.bottom_face.array = goal_pyraminx.bottom.copy()
 
-    # Call A_Star to solve the pyraminx
-    path = A_Star(start_pyraminx, goal_pyraminx)
+        # Randomize the Pyraminx
+        Face.get_random_turn(k)
 
-    if path is None:
-        print("No path found")
-    else:
-        print("Path found:")
+        start_pyraminx = Node()
+        start_pyraminx.set_current_configuration()
+        start_pyraminx.calculate_heuristic()
 
-        # Print the path
-        # For each configuration in the path, format the GUI and output the configuration
-        for configuration in path:
+        # Call A_Star to solve the pyraminx
+        path, nodes_expanded = A_Star(start_pyraminx, goal_pyraminx)
 
-            # Format GUI
-            left = [cubie.color for cubie in configuration.left]
-            front = [cubie.color for cubie in configuration.front]
-            right = [cubie.color for cubie in configuration.right]
-            bottom = [cubie.color for cubie in configuration.bottom]
-            Pyraminx.faces = [left, front, right, bottom]
+        if path is None:
+            print("No path found")
+        else:
+            print("Path found:")
+            results.append(nodes_expanded)
 
-            # Output configuration
-            Pyraminx.craft_pyramid()
-    
+            # Print the path
+            # For each configuration in the path, format the GUI and output the configuration
+            for configuration in path:
+
+                # Format GUI
+                left = [cubie.color for cubie in configuration.left]
+                front = [cubie.color for cubie in configuration.front]
+                right = [cubie.color for cubie in configuration.right]
+                bottom = [cubie.color for cubie in configuration.bottom]
+                Pyraminx.faces = [left, front, right, bottom]
+
+                # Output configuration
+                Pyraminx.craft_pyramid()
+                # Calculate the average number of nodes expanded for this value of k
+
+    if results:    
+        plot_results(results, k)
+
+
+
+def plot_results(results, k):
+    # Create a list for trial numbers (1 to 5)
+    trial_numbers = list(range(1, len(results) + 1))
+
+    # Plotting the results
+    plt.figure(figsize=(10, 6))
+    plt.plot(trial_numbers, results, marker='o', linestyle='-', color='b')
+    plt.xlabel('Trial Number')
+    plt.ylabel('Nodes Expanded')
+    plt.title(f'Nodes Expanded in Each Trial for k={k} (A* on Pyraminx)')
+    plt.grid(True)
+    plt.xticks(trial_numbers)  # Ensure only integer trial numbers are shown on the x-axis
+    # Determine the step size for y-axis ticks
+    step_size = max(1, (max(results) - min(results)) // 10)
+    plt.yticks(range(min(results), max(results) + 1, step_size))
+    plt.show()
+
+
 if __name__ == '__main__':
     main()
