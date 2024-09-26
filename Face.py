@@ -664,7 +664,7 @@ def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
     return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
 
 #Create list of possible moves
-moves = ["U1", "U2", "U3", "U4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4"]
+moves = ["U1", "U2", "U3", "U4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4", "B1", "B2", "B3", "B4"]
 
 # A mapping of the placement of the cubies before the rotation before a turn (which is the index) and after (value of the index)
 # Used in both rotation between faces and within the face on the event of a fourth row turn

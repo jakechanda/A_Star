@@ -143,6 +143,12 @@ def play_game() -> tuple:
             
     return arg, direction
 
+# Name: def update_faces() -> None:
+# Description: This function will update the faces of the pyramid for the gui
+def update_faces():
+    global faces
+    faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
+
 # Main function
 # Flow:
 # Print the welcome message
