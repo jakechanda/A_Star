@@ -1,5 +1,6 @@
 import random
 import Cubies
+import math
 
 # Name: Face
 # Description: This class will represent a face of the pyraminx
@@ -23,7 +24,6 @@ class Face:
 
     # Name: generate_cubies(self) -> None:
     # Generates the cubies for the face.
-    # Note: This function is not used in the code. It is setup for assignment 2.
     # Returns:
     # None
     def generate_cubies(self) -> None:
@@ -32,14 +32,20 @@ class Face:
 
     # Name: check_cubies(self) -> None:
     # Checks the cubies for the face.
-    # Note: This function is not used in the code. It is setup for assignment 2.
     # Returns:
     # None
-    def check_cubies(self) -> None:
-        for index, cubie in enumerate(self.array):
-            if cubie.color != self.color and cubie.position != index:
-                print("Cubie color does not match face color")
-    
+    def check_cubies(self) -> int:
+        counter = 0
+        for cubie in self.array:
+            if cubie.color != self.color:
+                counter += 1
+        return counter
+
+    # Name: output_color(self) -> list:
+    # Returns The cubies in the face.
+    def output_color(self) -> list:
+        return [cubie.color for cubie in self.array]
+
     # Name: fill_array(self, color) -> None:
     # Fills the array with the given color.
     # Parameters:
@@ -642,6 +648,21 @@ def change_face(face_arg, front_face) -> None:
 def solved() -> bool:
     return left_face.is_solved() and front_face.is_solved() and right_face.is_solved() and bottom_face.is_solved()
 
+# Name: heuristic_function
+# The heuristic function for the A* algorithm
+# It goes through all the faces, and checks the number of cubies that are not the same color as the face
+# It then returns the ceiling of number of cubies that are not the same color as the face divided by 21
+# Parameters:
+# All faces
+# Returns:
+# int: The heuristic value.
+def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
+    left_face_count = left_face.check_cubies()
+    front_face_count = front_face.check_cubies()
+    right_face_count = right_face.check_cubies()
+    bottom_face_count = bottom_face.check_cubies()
+    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
+
 #Create list of possible moves
 moves = ["U1", "U2", "U3", "U4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4"]
 
@@ -659,13 +680,14 @@ right_face = Face('Y')
 bottom_face = Face('R')
 
 # Fill the arrays with the colors of the faces
-left_face.fill_array(left_face.color)
-front_face.fill_array(front_face.color)
-right_face.fill_array(right_face.color)
-bottom_face.fill_array(bottom_face.color)
+left_face.generate_cubies()
+front_face.generate_cubies()
+right_face.generate_cubies()
+bottom_face.generate_cubies()
 
 # Set the neighbors for each face
 left_face.set_neighbors(right_face, front_face, bottom_face, right_face, front_face, bottom_face, bottom_face, right_face, front_face)
 front_face.set_neighbors(left_face, right_face, bottom_face, left_face, right_face, bottom_face, bottom_face, left_face, right_face)
 right_face.set_neighbors(front_face, left_face, bottom_face, front_face, left_face, bottom_face, bottom_face, front_face, left_face)
 bottom_face.set_neighbors(right_face, left_face, front_face, right_face, left_face, front_face, front_face, right_face, left_face)
+

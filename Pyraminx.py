@@ -11,7 +11,8 @@ color_map = {
 
 # List of faces
 global faces
-faces = [Face.left_face.array, Face.front_face.array, Face.right_face.array, Face.bottom_face.array]
+faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
+faces_reference = [Face.left_face, Face.front_face, Face.right_face, Face.bottom_face]
 
 # Number of layers in the pyramid
 layers = 4
@@ -164,4 +165,7 @@ def main():
             continue
 
         Face.rotate_face(arg, direction, Face.front_face)
+        global faces
+        faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
         craft_pyramid()
+        print("Heuristic value: " + str(Face.heuristic_function(Face.left_face, Face.front_face, Face.right_face, Face.bottom_face)))
