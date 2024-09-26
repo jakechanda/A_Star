@@ -50,6 +50,8 @@ class Node:
             child.calculate_heuristic()
             children.append(child)
 
+        Pyraminx.faces_reference = self.configuration
+        
         for move in possible_moves:
             Pyraminx.faces_reference = self.configuration
             child = Node(self, self.configuration)
@@ -70,6 +72,7 @@ class Node:
     def apply_move(self, arg, direction, face):
         # Apply the move to the current configuration
         Face.rotate_face(arg, direction, face)
+        Pyraminx.faces_reference = [Face.left_face, Face.front_face, Face.right_face, Face.bottom_face]
 
 # list = Node()
 # list.set_current_configuration()
