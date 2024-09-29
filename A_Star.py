@@ -129,14 +129,17 @@ class Node:
     def __eq__(self, other):
         return self.left == other.left and self.front == other.front and self.right == other.right and self.bottom == other.bottom
 
-# list = Node()
-# list.set_current_configuration()
-# list.calculate_heuristic()
-# print(list.configuration)
-# print(list.h)
 
-# Pyraminx.test()
-
+# Name: def A_Star(start_pyraminx, goal_pyraminx)
+# Description: This function will implement the A* algorithm to solve the Pyraminx
+# Input: start_pyraminx - the starting configuration of the Pyraminx
+#        goal_pyraminx - the goal configuration of the Pyraminx
+# Output: path - the path from the starting configuration to the goal configuration
+#         nodes_expanded - the number of nodes expanded during the search
+# I got confused trying to relate pseudocode from in class/textbook and online resources, 
+# so I used ChatGPT 4o to generate some pseudocode using the following prompt:
+# I need to see the pseudocode for A* algorithm as it relates to the master pyraminx
+# The pseudocode resides in the Pseudocode.txt.txt file
 def A_Star(start_pyraminx, goal_pyraminx):
     # Initialize the open list
     open_list = []
@@ -171,7 +174,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
         children = current_node.generate_children()
 
         for child in children:
-            # Check if child is in closed list
+            # Check if child is in closed list (see __eq__ function in Node class)
             if any(child == closed_node for closed_node in closed_list):
                 continue
 
@@ -185,22 +188,18 @@ def A_Star(start_pyraminx, goal_pyraminx):
             else:
                 heapq.heappush(open_list, (child.f, child))
 
-    return None  # If no path is found
+    return None  # If no solved configuration is found
 
 
 def main():
 
 
     print("Welcome to the A* Pyraminx Solver!")
-    print("Please input k, the number of moves you would like to randomize the Pyraminx by")
-    k = int(input())
+    print("This program will solve 5 instances of the pyraminx for each value of k from 3 to 20, the amount of random moves made on the Pyraminx")
+    print("The program will output the number of nodes expanded for each trial and plot the results")
+    print("Please press enter to begin the program")
+    k = input()
     results = []
-    print("Randomizing the Pyraminx by " + str(k) + " moves...")
-
-    print("There will be five trials done with the Pyraminx being randomized by " + str(k) + " moves")
-
-
-    node_counts = []
 
     # Initialize the goal Pyraminx when the pyraminx is solved
     goal_pyraminx = Node()
@@ -260,7 +259,11 @@ def main():
 
 
 
-
+# Name: plot_results(results, k)
+# Description: This function will plot the results of the A* algorithm for each trial
+# Input: results - the results of the A* algorithm for each trial
+#        k - the number of random moves made on the Pyraminx
+# Output: A plot of the results, saved as plot_k_{k}.png
 def plot_results(results, k):
     # Create a list for trial numbers (1 to 5)
     trial_numbers = list(range(1, len(results) + 1))

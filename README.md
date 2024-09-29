@@ -1,104 +1,84 @@
-# Master Pyraminx
-A 2D representation of the master pyraminx, a 4x4 triangular pyramid rubix cube  
+# Master Pyraminx A* Solver
+A solver using the A* algorithm of 2D representation of the master pyraminx, a 4x4 triangular pyramid rubix cube  
 CS463G Fall 2024
 
 ## How to run
 Install python 3.12.5  
 Navigate to the project folder/directory  
-Run the Pyraminx.py python file in a terminal, preferably one with a black background color 
+Install the matplotlib package
 ```
-python Pyraminx.py
+pip install matplotlib
 ```
-In order to run the randomizer, type "random" or "randomize" into the terminal while the program is running
-
-## The Pyraminx
-The pyraminx has 4 faces. In this representation a player will only rotate the front face. To make a move, the player must specify a corner, and which layer to turn. The possible corners are the upper corner, the left corner, and the right corner. So the user must input one of the following: U, L, R followed by one of the four layers: 1, 2, 3, 4. Then to specify the direction the user inputs 1 or 2 to specify clockwise or counterclockwise respectively. In the program you interact with the front face, with the ability to change which face the front is so that it is possible to solve the puzzle.
-
-## Data structure
-The data structure used to represent the master pyraminx in this project is a class called Face. Four
-instances of this object are instantiated in the program, one to represent each side of the pyraminx.
-The object instanciates with an array, and a color which represents the initial color of each cubie in
-the face. The array at index 0 represent the first row, indexes 1-3, the second row, indexes 4-8, the third,
-indexes 9-15, the fourth. Here is a visual representation of how the the data structure is represented:
+Run the A_Star.py python file in a terminal, preferably one with a black background color 
 ```
-           [0,
-         1, 2, 3,
-       4, 5, 6, 7, 8,
-  9, 10, 11, 12, 13, 14, 15]
+python A_Star.py
 ```
-### Neighbors
-Each Face object also has a set of neighbors which are used in the process of rotation. These neighbors are 
-references to the array of the other 3 faces of the pyraminx and model one of the configurations of a 
-pyraminx given in class. Below is the method used to set the neighbors. With a map of all the neighbors, rotation can
-be implemented for each face that affects the correct neighbors.
-```
-Function name and parameters:
-def set_neighbors(self, upper_cw, upper_ccw, left_cw, left_ccw, right_cw, right_ccw, back, back_cw, back_ccw) -> None:
+Enjoy!
 
-Setting the neighbors:
-left_face.set_neighbors(right_face, front_face, bottom_face, right_face, front_face, bottom_face, bottom_face, right_face, front_face)
-front_face.set_neighbors(left_face, right_face, bottom_face, left_face, right_face, bottom_face, bottom_face, left_face, right_face)
-right_face.set_neighbors(front_face, left_face, bottom_face, front_face, left_face, bottom_face, bottom_face, front_face, left_face)
-bottom_face.set_neighbors(right_face, left_face, front_face, right_face, left_face, front_face, front_face, right_face, left_face)
-```
-### Rotation
-For each of the rotation on the front face there is a function that takes the affected faces and applies a transformation
-corresponding to the indexes of the affected faces.
+## The Pyraminx recap
+The pyraminx has 4 faces. In this representation a player will only rotate the front face. To make a move, the player must specify a corner, and which layer to turn. The possible corners are the upper corner, the left corner, the right corner, and the back corner. So the user could input one of the following: U, L, R, B followed by one of the four layers: 1, 2, 3, 4. Then to specify the direction the user inputs 1 or 2 to specify clockwise or counterclockwise respectively. In the program the solver only interacts with the front face. This may differ from your standard pyraminx representation that only lets you change the first row, the first and second row, the third row, and the fourth row. As such this pyraminx has orders of magnitude more states that the pyraminx can be in after a few moves than a standard pyraminx.
 
-- `rotate_upper_cw()`: Rotates the specified upper layers clockwise.
-- `rotate_upper_ccw()`: Rotates the specified upper layers counterclockwise.
-- `rotate_left_cw()`: Rotates the specified left layers clockwise.
-- `rotate_left_ccw()`: Rotates the specified left layers counterclockwise.
-- `rotate_right_cw()`: Rotates the specified right layers clockwise.
-- `rotate_right_ccw()`: Rotates the specified right layers counterclockwise.
+## Data structures
+#### Open List
+Type: `Min-Heap` (implemented using a list with heapq functions)  
 
-Each rotation transformation between faces can be described as a mapping of indexes before and after rotation, which is what was mapped out, implemented as two arrays, and used in the rotation functions to implement the rotation. 
+Purpose: The open list keeps track of nodes that need to be explored. Nodes in this list are prioritized based on their f value (the sum of the cost to reach the node and the estimated cost to reach the goal from the node).  
 
-`clockwise_rotation = [9, 11, 10, 4, 13, 12, 6, 5, 1, 15, 14, 8, 7, 3, 2, 0]`
-`counterclockwise_rotation = [15, 8, 14, 13, 3, 7, 6, 12, 11, 0, 2, 1, 5, 4, 10, 9]`
+Operations:
+- Insertion: `heapq.heappush(open_list, (node.f, node))` adds a node to the heap while maintaining the heap property.
 
-These mappings work both for rotations between faces, and when a fourth layer turn action is taken by the player, the mappings work the rotation of cubies within the needed face.
+- Extraction: `heapq.heappop(open_list)` removes and returns the node with the smallest f value.
+#### Closed List
+Type: `List`
+- Purpose: The closed list keeps track of nodes that have already been explored to avoid reprocessing them.
+#### Nodes
+Type: `Node Class` (made by me)  
+Purpose: Represents states in the search space. Each node typically contains:
+- State Information: The current configuration of the puzzle or problem.
+- Parent Pointer: A reference to the parent node, used to reconstruct the path once the goal is reached.
 
-### Change Faces
-The ability to change the current front face is implemented. When the player inputs 'Face' into the application it prompts
-them to change the current front face. The program does this by swapping the arrays inside each affected face when changing
-faces.
-
-## GUI Output
-
-```
-   G          B          Y          R
-  GGG        BBB        YYY        RRR
- GGGGG      BBBBB      YYYYY      RRRRR
-GGGGGGG    BBBBBBB    YYYYYYY    RRRRRRR
- Left       Front      Right      Bottom
-```
-
-## Randomizer
-The random library is imported to gain access to randomly selecting contents of an array, and randomly choose between two numbers.
-Return random.choice(moves) accesses the array moves to sekect one of the 16 possible moves when called.
-Return random.choice(["1", "2"]) to return either 1 or 2 when called.
-def get_random_turn() calles both of those commands, and loops itself 20 times (that number can be changed to the desired number of random moves by changing the number in "for _ in range(20)")
-After those two commands are called, the two values used to call rotate_face to perform the action of the random move on the front face.
+- Cost Values: g (cost from the start node), h (heuristic estimate to the goal), and f (sum of g and h).
 
 ## Heuristic
-The goal is to get the Pyraminx into the solved state by having all 4 sides be 1 solid color. We will add up corners, edges, and center pieces and divide them into 9. The number 9 is chosen because in a worst-case scenario the number of misplaced corners, edges, and centers in 1 move is 9. When we implement the heuristic, there will be cubies assigned to corners, edges with the base of the cubie facing the edge making up 1 edge, and a center cubie. On every face, a misplaced corner, edge, and center piece will make up 1 to add to the heuristic. All misplaced values will be added, then divided by 9 to give the final heuristic value for minimum amount of moves to solve the pyraminx. To check if the cubies are in the right place or not, for example, for the blue face, we will check array spots 0, 9, and 15 to see if they are all three colored blue to match the face. 
+The description of the admissible heuristic used in this program:  
+The admissible heuristic for this program sums up the amount of cubies in wrong spots on all the four faces, divides the result by 21, then takes the ceiling. This is admissible because the function leverages the fact that at most 21 cubies can be displaced in one turn, that being the layer four turn. The code for the heuristic function can be found in the `Face.py` file, as well as below:  
+```
+def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
+    left_face_count = left_face.check_cubies()
+    front_face_count = front_face.check_cubies()
+    right_face_count = right_face.check_cubies()
+    bottom_face_count = bottom_face.check_cubies()
+    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
+```
+
+## Results
+This is where the results of the output are detailed:  
+
+The program outputs graphs that show how many nodes are expanded in each trial of a k depth randomized pyraminx. The variance in the results is large because of the nature of the implemented pyraminx (see pyraminx recap).  
+
+The program can solve pyraminxes up to k=6 randomization, where the program will run for hours then crash before even solving one trial.    
+
+This is a list of runtimes and k level:
+
+- k = 1: instant
+- k = 2: instant
+- k = 3: instant to 1 minute runtime
+- k = 4: 30 seconds to 2 minute runtime
+- k = 5: Around 1 hour runtime
+- k = 6: crashes
+
+Because of the ability to modify each row individually, the ability to turn the back corner of the pyraminx, and the ability to turn both clockwise and counter clockwise there are many possible states, and the program crashes at a depth of k=6.
+
+
 ## Learning Outcomes
+A discussion of learning outcomes had during this assignment:  
 
 ### Technical
-Deep Copy vs Shallow copy - When setting the neighbors of a face I wanted a pass by reference so that
-an action taken one one Face accurately affects and updates the other, but this being python and not C
-I had to look into how this works, luckily it's handled and the assignment operator makes a reference in 
-memory to the object. When creating the temporary arrays I needed to call the .copy() function which creates
-a deep copy that does not affect the original array/list when referenced.
-I had to look up library commands for the random library as I have never dealt with that library in python before.
+Deep Copy vs Shallow copy - Again in this assignment I had difficulty navigating deep copy vs shallow copy when trying to affect the pyraminx. In particular when trying to generate the children I had to redefine functions to make my life easier and allocate extra memory to making sure the configuration of the pyraminx wasn't adversly affected by generating new children.
 
 ### Project completing skills
-Test-Driven- I used a test-driven development style to complete this project. I implemented a feature, then tested it and broke it to find the edge cases, and fixed those, then repeated. I learned this style takes me longer than writing code and then testing it all at once after to find the bugs, but the way I implemented the rotations it seemed like the best way to go about it. One of the rotation values, the back gave too much trouble and it was axed from the project, so I also learned to let things go since it was technically unnecessary.
+Time estimation - This project took a lot longer than expected. When I would discover a bug in the algorithm I had to rerun all the test cases, which when the program got to k=5, took hours each time.
 
-Time estimation - This project took a lot longer than expected. I learned that I need to estimate time to complete a feature more
-liberally because it takes time to test and bug fix.
+Documentation - For every function I tried to document the inputs and outputs. The documentation may be repeating information, but I am trying to write enough so that if one just looked at that section of the code they at least understand the inputs and outputs with the documentation.
 
-Documentation - For every function I tried to document the inputs, outputs, and flow of code. This may have resulted in the project becoming unnecessarily long, but I feel I have learned/developed skills to better what it means to describe my code in english.
-
-Heuristic - The heuristic took a lot more thought than I originally anticipated, there would always be 1 or 2 moves that would make it not admissible, or it would be a very low heuristic value that wouldn't be very accurate to the total number of moves, though admissible. 
+Pseudocode - Understanding how to implement the A* Algorithm was a long arduous process. It was only after asking chatgpt to generate a tailor-made pseudocode for the project that understanding how to implement it finally clicked. I had to split up implementing the algorithm into many steps, where I implemented functions in the Node class to accomodate them.
