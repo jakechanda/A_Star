@@ -206,50 +206,57 @@ def main():
     goal_pyraminx = Node()
     goal_pyraminx.set_current_configuration()
     goal_pyraminx.calculate_heuristic()
+    # Values k = 3 to 20
+    for k in range(3, 20):
 
-    for trial in range(5):
+        print("Welcome to the pyramid randomized by " + str(k) + " turns trials")
+        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-        print("This is trial number " + str(trial + 1))
+        results = []
 
-        Face.left_face.array = goal_pyraminx.left.copy()
-        Face.front_face.array = goal_pyraminx.front.copy()
-        Face.right_face.array = goal_pyraminx.right.copy()
-        Face.bottom_face.array = goal_pyraminx.bottom.copy()
+        for trial in range(5):
 
-        # Randomize the Pyraminx
-        Face.get_random_turn(k)
+            print("This is trial number " + str(trial + 1))
 
-        start_pyraminx = Node()
-        start_pyraminx.set_current_configuration()
-        start_pyraminx.calculate_heuristic()
+            Face.left_face.array = goal_pyraminx.left.copy()
+            Face.front_face.array = goal_pyraminx.front.copy()
+            Face.right_face.array = goal_pyraminx.right.copy()
+            Face.bottom_face.array = goal_pyraminx.bottom.copy()
 
-        # Call A_Star to solve the pyraminx
-        path, nodes_expanded = A_Star(start_pyraminx, goal_pyraminx)
+            # Randomize the Pyraminx
+            Face.get_random_turn(k)
 
-        if path is None:
-            print("No path found")
-        else:
-            print("Path found:")
-            results.append(nodes_expanded)
+            start_pyraminx = Node()
+            start_pyraminx.set_current_configuration()
+            start_pyraminx.calculate_heuristic()
 
-            # Print the path
-            # For each configuration in the path, format the GUI and output the configuration
-            for configuration in path:
+            # Call A_Star to solve the pyraminx
+            path, nodes_expanded = A_Star(start_pyraminx, goal_pyraminx)
 
-                # Format GUI
-                left = [cubie.color for cubie in configuration.left]
-                front = [cubie.color for cubie in configuration.front]
-                right = [cubie.color for cubie in configuration.right]
-                bottom = [cubie.color for cubie in configuration.bottom]
-                Pyraminx.faces = [left, front, right, bottom]
+            if path is None:
+                print("No path found")
+            else:
+                print("Path found:")
+                results.append(nodes_expanded)
 
-                # Output configuration
-                Pyraminx.craft_pyramid()
-                # Calculate the average number of nodes expanded for this value of k
-        print("The nodes printed for trial " + str(trial + 1) + " is " + str(nodes_expanded))
+                # Print the path
+                # For each configuration in the path, format the GUI and output the configuration
+                for configuration in path:
 
-    if results:    
-        plot_results(results, k)
+                    # Format GUI
+                    left = [cubie.color for cubie in configuration.left]
+                    front = [cubie.color for cubie in configuration.front]
+                    right = [cubie.color for cubie in configuration.right]
+                    bottom = [cubie.color for cubie in configuration.bottom]
+                    Pyraminx.faces = [left, front, right, bottom]
+
+                    # Output configuration
+                    Pyraminx.craft_pyramid()
+                    # Calculate the average number of nodes expanded for this value of k
+            print("The nodes expanded for trial " + str(trial + 1) + " is " + str(nodes_expanded))
+
+        if results:    
+            plot_results(results, k)
 
 
 
@@ -271,7 +278,7 @@ def plot_results(results, k):
     plt.yticks(range(min(results), max(results) + 1, step_size))
     plt.savefig(f'plot_k_{k}.png')
     print(f"Plot saved as plot_k_{k}.png")
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':

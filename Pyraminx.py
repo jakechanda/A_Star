@@ -1,4 +1,5 @@
 import Face
+import copy
 
 # ANSI color codes
 color_map = {
@@ -13,6 +14,7 @@ color_map = {
 global faces
 faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
 faces_reference = [Face.left_face, Face.front_face, Face.right_face, Face.bottom_face]
+faces_deepcopy = [copy.deepcopy(Face.left_face), copy.deepcopy(Face.front_face), copy.deepcopy(Face.right_face), copy.deepcopy(Face.bottom_face)]
 
 # Number of layers in the pyramid
 layers = 4
@@ -182,3 +184,4 @@ def test():
     faces = [Face.left_face.output_color(), Face.front_face.output_color(), Face.right_face.output_color(), Face.bottom_face.output_color()]
     craft_pyramid()
     print("Heuristic value: " + str(Face.heuristic_function(Face.left_face, Face.front_face, Face.right_face, Face.bottom_face)))
+
