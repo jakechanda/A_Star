@@ -129,7 +129,13 @@ class Node:
     def __eq__(self, other):
         return self.left == other.left and self.front == other.front and self.right == other.right and self.bottom == other.bottom
 
+# list = Node()
+# list.set_current_configuration()
+# list.calculate_heuristic()
+# print(list.configuration)
+# print(list.h)
 
+# Pyraminx.test()
 # Name: def A_Star(start_pyraminx, goal_pyraminx)
 # Description: This function will implement the A* algorithm to solve the Pyraminx
 # Input: start_pyraminx - the starting configuration of the Pyraminx
@@ -174,7 +180,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
         children = current_node.generate_children()
 
         for child in children:
-            # Check if child is in closed list (see __eq__ function in Node class)
+            # Check if child is in closed list
             if any(child == closed_node for closed_node in closed_list):
                 continue
 
@@ -188,74 +194,71 @@ def A_Star(start_pyraminx, goal_pyraminx):
             else:
                 heapq.heappush(open_list, (child.f, child))
 
-    return None  # If no solved configuration is found
+    return None  # If no path is found
 
 
 def main():
 
 
     print("Welcome to the A* Pyraminx Solver!")
-    print("This program will solve 5 instances of the pyraminx for each value of k from 3 to 20, the amount of random moves made on the Pyraminx")
-    print("The program will output the number of nodes expanded for each trial and plot the results")
-    print("Please press enter to begin the program")
-    k = input()
+    print("Please input k, the number of moves you would like to randomize the Pyraminx by")
+    k = int(input())
     results = []
+    print("Randomizing the Pyraminx by " + str(k) + " moves...")
+
+    print("There will be five trials done with the Pyraminx being randomized by " + str(k) + " moves")
+
+
+    node_counts = []
 
     # Initialize the goal Pyraminx when the pyraminx is solved
     goal_pyraminx = Node()
     goal_pyraminx.set_current_configuration()
     goal_pyraminx.calculate_heuristic()
-    # Values k = 3 to 20
-    for k in range(3, 20):
 
-        print("Welcome to the pyramid randomized by " + str(k) + " turns trials")
-        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    for trial in range(5):
 
-        results = []
+        print("This is trial number " + str(trial + 1))
 
-        for trial in range(5):
+        Face.left_face.array = goal_pyraminx.left.copy()
+        Face.front_face.array = goal_pyraminx.front.copy()
+        Face.right_face.array = goal_pyraminx.right.copy()
+        Face.bottom_face.array = goal_pyraminx.bottom.copy()
 
-            print("This is trial number " + str(trial + 1))
+        # Randomize the Pyraminx
+        Face.get_random_turn(k)
 
-            Face.left_face.array = goal_pyraminx.left.copy()
-            Face.front_face.array = goal_pyraminx.front.copy()
-            Face.right_face.array = goal_pyraminx.right.copy()
-            Face.bottom_face.array = goal_pyraminx.bottom.copy()
+        start_pyraminx = Node()
+        start_pyraminx.set_current_configuration()
+        start_pyraminx.calculate_heuristic()
 
-            # Randomize the Pyraminx
-            Face.get_random_turn(k)
+        # Call A_Star to solve the pyraminx
+        path, nodes_expanded = A_Star(start_pyraminx, goal_pyraminx)
 
-            start_pyraminx = Node()
-            start_pyraminx.set_current_configuration()
-            start_pyraminx.calculate_heuristic()
+        if path is None:
+            print("No path found")
+        else:
+            print("Path found:")
+            results.append(nodes_expanded)
 
-            # Call A_Star to solve the pyraminx
-            path, nodes_expanded = A_Star(start_pyraminx, goal_pyraminx)
+            # Print the path
+            # For each configuration in the path, format the GUI and output the configuration
+            for configuration in path:
 
-            if path is None:
-                print("No path found")
-            else:
-                print("Path found:")
-                results.append(nodes_expanded)
+                # Format GUI
+                left = [cubie.color for cubie in configuration.left]
+                front = [cubie.color for cubie in configuration.front]
+                right = [cubie.color for cubie in configuration.right]
+                bottom = [cubie.color for cubie in configuration.bottom]
+                Pyraminx.faces = [left, front, right, bottom]
 
-                # Print the path
-                # For each configuration in the path, format the GUI and output the configuration
-                for configuration in path:
+                # Output configuration
+                Pyraminx.craft_pyramid()
+                # Calculate the average number of nodes expanded for this value of k
+        print("The nodes printed for trial " + str(trial + 1) + " is " + str(nodes_expanded))
 
-                    # Format GUI
-                    left = [cubie.color for cubie in configuration.left]
-                    front = [cubie.color for cubie in configuration.front]
-                    right = [cubie.color for cubie in configuration.right]
-                    bottom = [cubie.color for cubie in configuration.bottom]
-                    Pyraminx.faces = [left, front, right, bottom]
-
-                    # Output configuration
-                    Pyraminx.craft_pyramid()
-                    # Calculate the average number of nodes expanded for this value of k
-            print("The nodes expanded for trial " + str(trial + 1) + " is " + str(nodes_expanded))
-
-        if results:    
-            plot_results(results, k)
+    if results:    
+        plot_results(results, k)
 
 
 
@@ -281,7 +284,7 @@ def plot_results(results, k):
     plt.yticks(range(min(results), max(results) + 1, step_size))
     plt.savefig(f'plot_k_{k}.png')
     print(f"Plot saved as plot_k_{k}.png")
-    # plt.show()
+    plt.show()
 
 
 if __name__ == '__main__':
