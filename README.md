@@ -32,7 +32,7 @@ Operations:
 Type: `List`
 - Purpose: The closed list keeps track of nodes that have already been explored to avoid reprocessing them.
 #### Nodes
-Type: `Node Class` (made by me)  
+Type: `Node Class`  
 Purpose: Represents states in the search space. Each node typically contains:
 - State Information: The current configuration of the pyraminx.
 - Parent Pointer: A reference to the parent node, used to reconstruct the path once the goal is reached.
@@ -40,15 +40,38 @@ Purpose: Represents states in the search space. Each node typically contains:
 - Cost Values: g (cost from the start node), h (heuristic estimate to the goal), and f (sum of g and h).
 
 ## Heuristic
-The description of the admissible heuristic used in this program:  
-The admissible heuristic for this program sums up the amount of cubies in wrong spots on all the four faces, divides the result by 21, then takes the ceiling. This is admissible because the function leverages the fact that at most 21 cubies can be displaced in one turn, that being the layer four turn. The code for the heuristic function can be found in the `Face.py` file, as well as below:  
+This admissible heuristic function searches for groups of misplaced cubies. It will take a look at all 3 corners of the face, adding 1 for every color not matching its original color. It will then look at the edges of the face, split up a little unevenly so it can include all the pieces of the remaining cubies of the face excluding the middle cubie without overlapping, broken up by the left edge having cubies stored at [1, 2, 4, 5], right edge having cubies stored at [3, 7, 8] and the bottom edge having cubies stored at [10, 11, 12, 13, 14]. And it checks the middle cubie as well last. To prevent unnecessary counter additions for edges if there are multiple incorrect cubies, the 'any' function is used only call it 1 time if there is at least 1 misplace, and still 0 times if there are none. After counting all the misplaced corners, edges, and middle pieces, that number will be divided by 9 because that is the most amount of misplaced corners edges and middle pieces on a single move, that move being a base rotation. The code for the heuristic function can be found in the `Face.py` file, as well as below:  
 ```
+ def check_cubies(self) -> int:
+        counter = 0
+        # Define the specific cubie positions for corners and edges
+        corner_indices = [0, 9, 15]  # Example: first index in each corner group
+        edge_indices = [(1, 2, 4, 5), (3, 7, 8), (10, 11, 12, 13, 14)]  # Each tuple represents one edge group
+        middle_indices = [6]  # Middle layer positions
+
+        # Check corners
+        for cubies in corner_indices:
+            if self.array[cubies].color != self.color:
+                counter += 1
+
+        # Check edges
+        for cubies in edge_indices:
+            if any(self.array[i].color != self.color for i in cubies):
+                counter += 1
+
+        #Check middle layer
+        for cubies in middle_indices:
+            if self.array[cubies].color != self.color:
+                counter += 1
+
+        return counter
+
 def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
     left_face_count = left_face.check_cubies()
     front_face_count = front_face.check_cubies()
     right_face_count = right_face.check_cubies()
     bottom_face_count = bottom_face.check_cubies()
-    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
+    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 9)
 ```
 
 ## Results
@@ -56,16 +79,13 @@ This is where the results of the output are detailed:
 
 The program outputs graphs that show how many nodes are expanded in each trial of a k depth randomized pyraminx. The variance in the results is large because of the nature of the implemented pyraminx (see pyraminx recap).  
 
-The program can solve pyraminxes up to k=6 randomization, where the program will run for hours then crash before even solving one trial.    
+This is a list of the average number of nodes and k level I as able to test:
 
-This is a list of runtimes and k level:
-
-- k = 1: instant
-- k = 2: instant
-- k = 3: instant to 1 minute runtime
-- k = 4: 30 seconds to 2 minute runtime
-- k = 5: Around 1 hour runtime
-- k = 6: crashes
+- k = 1: ~2 nodes average
+- k = 2: ~5 nodes average
+- k = 3: ~26 nodes average
+- k = 4: ~90 nodes average 
+- k = 5: ~505 nodes average
 
 Because of the ability to modify each row individually, the ability to turn the back corner of the pyraminx, and the ability to turn both clockwise and counter clockwise there are many possible states, and the program crashes at a depth of k=6. Additionally, it is possible for a trial to get "lucky" and have two moves that counter-act each other, like a U1 clockwise move, then a U1 counterclockwise move, which would significantly speed up a trial.
 
@@ -77,7 +97,7 @@ A discussion of learning outcomes had during this assignment:
 Deep Copy vs Shallow copy - Again in this assignment I had difficulty navigating deep copy vs shallow copy when trying to affect the pyraminx. In particular when trying to generate the children I had to redefine functions to make my life easier and allocate extra memory to making sure the configuration of the pyraminx wasn't adversly affected by generating new children.
 
 ### Project completing skills
-Time estimation - This project took a lot longer than expected. When I would discover a bug in the algorithm I had to rerun all the test cases, which when the program got to k=5, took hours each time.
+Time estimation - This project took longer than expected, specifically ith implimenting the heuristic correctly. I had to do multiple different trials with different ways of coding my heursting before I was finally able to findd the currently best optimization of it which cut down a 5 rotation trial from about 2 hours to about 10 minutes for my computer.
 
 Documentation - For every function I tried to document the inputs and outputs. The documentation may be repeating information, but I am trying to write enough so that if one just looked at that section of the code they at least understand the inputs and outputs with the documentation.
 
