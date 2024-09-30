@@ -34,7 +34,7 @@ Type: `List`
 #### Nodes
 Type: `Node Class` (made by me)  
 Purpose: Represents states in the search space. Each node typically contains:
-- State Information: The current configuration of the puzzle or problem.
+- State Information: The current configuration of the pyraminx.
 - Parent Pointer: A reference to the parent node, used to reconstruct the path once the goal is reached.
 
 - Cost Values: g (cost from the start node), h (heuristic estimate to the goal), and f (sum of g and h).
@@ -67,7 +67,7 @@ This is a list of runtimes and k level:
 - k = 5: Around 1 hour runtime
 - k = 6: crashes
 
-Because of the ability to modify each row individually, the ability to turn the back corner of the pyraminx, and the ability to turn both clockwise and counter clockwise there are many possible states, and the program crashes at a depth of k=6.
+Because of the ability to modify each row individually, the ability to turn the back corner of the pyraminx, and the ability to turn both clockwise and counter clockwise there are many possible states, and the program crashes at a depth of k=6. Additionally, it is possible for a trial to get "lucky" and have two moves that counter-act each other, like a U1 clockwise move, then a U1 counterclockwise move, which would significantly speed up a trial.
 
 
 ## Learning Outcomes
