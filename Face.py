@@ -36,9 +36,29 @@ class Face:
     # None
     def check_cubies(self) -> int:
         counter = 0
-        for cubie in self.array:
-            if cubie.color != self.color:
+        #Define the specific cubie positions for corners and edges, and the middle piece
+        corner_indices = [0, 9, 15] 
+        #First set represents the designated cubies for the left edge
+        #Second set represents designatedd cubies for the right edge
+        #Thrid set represents designatedd cubies for the bottom edge
+        edge_indices = [(1, 2, 4, 5), (3, 7, 8), (10, 11, 12, 13, 14)] 
+        middle_indices = [6] 
+
+        #Check corners
+        for corner_cubies in corner_indices:
+            if self.array[corner_cubies].color != self.color:
                 counter += 1
+
+        #Check edges
+        for edge_cubies in edge_indices:
+            if any(self.array[i].color != self.color for i in edge_cubies):
+                counter += 1
+
+        #Check middle
+        for cubies in muddle_indices:
+            if any(self.array[i].color != self.color for i in middle_indices):
+                counter += 1
+
         return counter
 
     # Name: output_color(self) -> list:
@@ -651,7 +671,7 @@ def solved() -> bool:
 # Name: heuristic_function
 # The heuristic function for the A* algorithm
 # It goes through all the faces, and checks the number of cubies that are not the same color as the face
-# It then returns the ceiling of number of cubies that are not the same color as the face divided by 21
+# It then returns the ceiling of number of cubies that are not the same color as the face divided by 9
 # Parameters:
 # All faces
 # Returns:
@@ -661,7 +681,8 @@ def heuristic_function(left_face, front_face, right_face, bottom_face) -> int:
     front_face_count = front_face.check_cubies()
     right_face_count = right_face.check_cubies()
     bottom_face_count = bottom_face.check_cubies()
-    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 21)
+    #Dividing by 9 because that is the maximum amount of misplaced corners/edges on a worse case scenario for 1 move needed to solve (a bottom layer rotation)
+    return math.ceil((left_face_count + front_face_count + right_face_count + bottom_face_count) / 9)
 
 #Create list of possible moves
 moves = ["U1", "U2", "U3", "U4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4", "B1", "B2", "B3", "B4"]
