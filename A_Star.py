@@ -180,7 +180,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
         children = current_node.generate_children()
 
         for child in children:
-            # Check if child is in closed list
+            # Check if child is in closed list (see __eq__ function in Node class)
             if any(child == closed_node for closed_node in closed_list):
                 continue
 
@@ -194,7 +194,7 @@ def A_Star(start_pyraminx, goal_pyraminx):
             else:
                 heapq.heappush(open_list, (child.f, child))
 
-    return None  # If no path is found
+    return None  # If no solved configuration is found
 
 
 def main():
