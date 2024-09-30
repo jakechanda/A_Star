@@ -55,7 +55,7 @@ class Face:
                 counter += 1
 
         #Check middle
-        for cubies in muddle_indices:
+        for cubies in middle_indices:
             if any(self.array[i].color != self.color for i in middle_indices):
                 counter += 1
 
